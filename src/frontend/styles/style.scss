@@ -1,0 +1,24 @@
+$font-stack: Helvetica, sans-serif;
+$primary-color: #333;
+
+body {
+  min-height: 90vh;
+  display: grid;
+  font: 100% $font-stack;
+  color: $primary-color;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  grid-template-areas: 'header' 'content' 'footer';
+}
+
+header {
+  grid-area: header;
+}
+
+main {
+  grid-area: content;
+}
+
+footer {
+  grid-area: footer;
+}
