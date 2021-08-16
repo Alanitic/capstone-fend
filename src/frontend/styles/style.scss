@@ -1,40 +1,19 @@
-$font-stack: Helvetica, sans-serif;
+$font-stack: Source Sans Pro, Helvetica, sans-serif;
 $primary-color: #e4eaf1;
 $nav-button: #7f9fc5;
 $nav-button-hover: #184070;
+$form-button: #e4223f;
+$form-button-hover: #ff4b66;
 
 body {
   margin: 0px;
   min-height: 100vh;
   display: grid;
-  font: 100% $font-stack;
+  font-family: $font-stack;
   font-size: 18px;
   grid-template-rows: 1fr 10fr 1fr;
   grid-template-columns: 1fr;
   grid-template-areas: 'header' 'content' 'footer';
-}
-
-.custom-shape-divider-bottom-1623275620 {
-  position: relative;
-  padding: 0%;
-  margin: 0%;
-  bottom: 0;
-  left: 0;
-  background-color: $primary-color;
-  width: 100%;
-  height: 90%;
-  overflow: hidden;
-  line-height: 0;
-  transform: rotate(180deg);
-  svg {
-    position: relative;
-    display: block;
-    width: calc(135% + 1.3px);
-    height: 158px;
-  }
-  .shape-fill {
-    fill: white;
-  }
 }
 
 header {
@@ -44,11 +23,12 @@ header {
   .nav-item {
     border: none;
     background-color: transparent;
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin: 20px;
     color: $nav-button;
-    transition: color 0.3s ease-in-out 0s;
+    transition: color 0.5s ease;
     &:hover {
+      cursor: pointer;
       color: $nav-button-hover;
     }
   }
@@ -60,4 +40,54 @@ main {
 
 footer {
   grid-area: footer;
+}
+
+h1 {
+  color: $nav-button-hover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.wave-container {
+  padding: 1vh 0 0 0;
+  background-color: $primary-color;
+}
+
+.search-bar {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 50vw;
+  background-color: white;
+  box-shadow: 0 10px 35px rgb(24 64 112 / 30%);
+  border-radius: 50px;
+  form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    * {
+      height: 8vh;
+      border: none;
+    }
+    select {
+      border-radius: 50px 0 0 50px;
+    }
+    button {
+      color: white;
+      width: 2vw;
+      background-color: $form-button;
+      border-radius: 0 50px 50px 0;
+      transition: background-color 0.3s ease;
+      i {
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+      }
+      &:hover {
+        cursor: pointer;
+        background-color: $form-button-hover;
+      }
+    }
+  }
 }
