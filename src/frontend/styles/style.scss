@@ -40,6 +40,8 @@ main {
 
 footer {
   grid-area: footer;
+  display: flex;
+  justify-content: center;
 }
 
 h1 {
@@ -90,4 +92,14 @@ h1 {
       }
     }
   }
+}
+
+.error-form {
+  display: flex;
+  justify-content: center;
+  color: $form-button-hover;
+}
+
+.hidden {
+  display: none;
 }

@@ -16,12 +16,15 @@
       <section class="wave-container">
         <h1>Plan your travel</h1>
         <section class="search-bar">
-          <form>
+          <form onsubmit="return Client.handleSubmit(event)">
             <select id="country"></select>
-            <input type="text" placeholder="Zip Code" />
-            <input type="date" />
+            <input id="zp" type="text" placeholder="Zip Code" />
+            <input id="date" type="date" />
             <button type="submit"><i class="fas fa-paper-plane"></i></button>
           </form>
+        </section>
+        <section class="error-form hidden">
+          <p id="error-msg"></p>
         </section>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
           <path
@@ -32,7 +35,7 @@
         </svg>
       </section>
     </main>
-    <footer>Footer</footer>
+    <footer>Final proyect FSDND Alan</footer>
     <link
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
