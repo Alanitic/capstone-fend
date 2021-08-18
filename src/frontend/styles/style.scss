@@ -103,3 +103,27 @@ h1 {
 .hidden {
   display: none;
 }
+
+.card {
+  background-color: white;
+  width: 12vw;
+  height: 50vh;
+  margin: 0 1vw;
+  border-radius: 15px;
+  box-shadow: 0 10px 35px rgb(24 64 112 / 10%);
+  img {
+    border-radius: 15px 15px 0 0;
+    width: 12vw;
+    height: 25vh;
+  }
+  h3,
+  p {
+    padding: 0 1vw;
+  }
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 5vh;
+}

@@ -15,7 +15,7 @@ const fetchWeather = async () => {
     `https://api.weatherbit.io/v2.0/forecast/daily?key=${API_KEY}&lat=${lat}&lon=${lng}`
   );
   const data = await response.json();
-  console.log(data);
+  console.log(data.data);
   if (isWithinWeek()) {
   } else {
   }
