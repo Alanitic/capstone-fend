@@ -1,6 +1,7 @@
 const MAX_ROWS = 10;
 const USER_NAME = 'alan_islas_itic';
-const API_KEY = 'a16ab59908364102890e0d53be290aa1';
+const WEATHER_API_KEY = 'a16ab59908364102890e0d53be290aa1';
+const PIXABAY_KEY = '7052805-c3a2de3d1e6a0eeb52e7f68eb';
 
 const handleSubmit = (e) => {
   e.preventDefault();
@@ -10,15 +11,23 @@ const handleSubmit = (e) => {
 };
 
 const fetchWeather = async () => {
-  const { lat, lng } = await getLatLon();
+  const { lat, lng, placeName } = await getLatLon();
   const response = await fetch(
-    `https://api.weatherbit.io/v2.0/forecast/daily?key=${API_KEY}&lat=${lat}&lon=${lng}`
+    `https://api.weatherbit.io/v2.0/forecast/daily?key=${WEATHER_API_KEY}&lat=${lat}&lon=${lng}`
   );
-  const data = await response.json();
-  console.log(data.data);
+  const { data } = await response.json();
   if (isWithinWeek()) {
+    const date = document.querySelector('#date');
+    const expected = data.find((item) => item.datetime === date.value);
+    createSingleCard(expected, placeName);
   } else {
   }
+};
+
+const createSingleCard = (data, place) => {
+  const container = document.querySelector('#weather-results');
+  const card = document.createElement('div');
+  card.classList.add('card');
 };
 
 const getLatLon = async () => {
@@ -28,8 +37,8 @@ const getLatLon = async () => {
     `http://api.geonames.org/postalCodeSearchJSON?postalcode=${ZP}&maxRows=${MAX_ROWS}&username=${USER_NAME}&country=${country}`
   );
   const { postalCodes } = await request.json();
-  const { lat, lng } = postalCodes[0];
-  return { lat, lng };
+  const { lat, lng, placeName } = postalCodes[0];
+  return { lat, lng, placeName };
 };
 
 const isWithinWeek = () => {
