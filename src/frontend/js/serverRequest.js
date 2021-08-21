@@ -3,4 +3,10 @@ const getRequest = async (url = '') => {
   return await request.json();
 };
 
-export { getRequest };
+const postRequest = async (url) => {
+  const respomse = await fetch(url, {
+    method: 'POST',
+  });
+};
+
+export { getRequest, postRequest };

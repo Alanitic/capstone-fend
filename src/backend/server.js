@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(express.static('dist'));
 
 apiRequest = require('./apiRequest');
+apiDestination = require('./destination');
 
 const COUNTRIES_URL =
   'https://restcountries.eu/rest/v2/all?fields=name;alpha2Code';
@@ -40,4 +41,44 @@ app.get('/country', (req, res) => {
       });
     }
   });
+});
+
+app.post('/destination', (req, res) => {
+  const country = req.query.country;
+  const ZP = req.query.ZP;
+  const date = req.query.date;
+
+  if (!country) {
+    res.status(400).send({
+      success: false,
+      message: 'No destination country provided',
+    });
+    return;
+  }
+
+  if (!ZP) {
+    res.status(400).send({
+      success: false,
+      message: 'No zip code provided',
+    });
+    return;
+  }
+
+  apiDestination
+    .getLatLon(ZP, country)
+    .then((data) => {
+      const { lat, lng, placeName } = data;
+      res.status(200).send({
+        success: true,
+        lat,
+        lng,
+        placeName,
+      });
+    })
+    .catch(() => {
+      res.status(404).send({
+        success: false,
+        message: 'No destination found',
+      });
+    });
 });
