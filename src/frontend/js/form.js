@@ -1,5 +1,3 @@
-const PIXABAY_KEY = '7052805-c3a2de3d1e6a0eeb52e7f68eb';
-
 const handleSubmit = (e) => {
   e.preventDefault();
   if (validateZP() && validateDate()) {
@@ -8,46 +6,13 @@ const handleSubmit = (e) => {
 };
 
 const fetchWeather = async () => {
-  const { lat, lng, placeName } = await getLatLon();
-  const response = await fetch(
-    `https://api.weatherbit.io/v2.0/forecast/daily?key=${WEATHER_API_KEY}&lat=${lat}&lon=${lng}`
-  );
-  const { data } = await response.json();
-  if (isWithinWeek()) {
-    const date = document.querySelector('#date');
-    const expected = data.find((item) => item.datetime === date.value);
-    createSingleCard(expected, placeName);
-  } else {
-  }
+  const { data } = await getRequest('http://localhost:8081/destination');
 };
 
 const createSingleCard = (data, place) => {
   const container = document.querySelector('#weather-results');
   const card = document.createElement('div');
   card.classList.add('card');
-};
-
-const getLatLon = async () => {
-  const ZP = document.querySelector('#zp').value;
-  const country = document.querySelector('#country').value;
-  const request = await fetch(
-    `http://api.geonames.org/postalCodeSearchJSON?postalcode=${ZP}&maxRows=${MAX_ROWS}&username=${USER_NAME}&country=${country}`
-  );
-  const { postalCodes } = await request.json();
-  const { lat, lng, placeName } = postalCodes[0];
-  return { lat, lng, placeName };
-};
-
-const isWithinWeek = () => {
-  const calendar = document.querySelector('#date');
-  const date = toDate(calendar.value);
-  const compare = new Date();
-  compare.setDate(compare.getDate() + 7);
-  if (compare > date) {
-    return true;
-  } else {
-    return false;
-  }
 };
 
 const validateZP = () => {

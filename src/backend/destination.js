@@ -1,6 +1,7 @@
 const MAX_ROWS = 10;
 const USER_NAME = 'alan_islas_itic';
 const WEATHER_API_KEY = 'a16ab59908364102890e0d53be290aa1';
+const PIXABAY_KEY = '7052805-c3a2de3d1e6a0eeb52e7f68eb';
 
 const apiRequest = require('./apiRequest');
 
@@ -17,4 +18,24 @@ const getWeatherForecast = async () => {
   return data;
 };
 
-exports.getLatLon = getLatLon;
+const isWithinWeek = (dateStr) => {
+  const date = toDate(dateStr);
+  const compare = new Date();
+  compare.setDate(compare.getDate() + 7);
+  if (compare > date) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const toDate = (dateStr) => {
+  const [year, month, day] = dateStr.split('-');
+  return new Date(year, month - 1, day);
+};
+
+module.exports = {
+  getLatLon,
+  getWeatherForecast,
+  isWithinWeek,
+};

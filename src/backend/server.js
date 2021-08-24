@@ -64,18 +64,29 @@ app.post('/destination', (req, res) => {
     return;
   }
 
+  if (!date) {
+    res.status(400).send({
+      success: false,
+      message: 'No travel date provided',
+    });
+    return;
+  }
+
   apiDestination
     .getLatLon(ZP, country)
     .then((data) => {
       const { lat, lng, placeName } = data;
+      if (apiDestination.isWithinWeek(date)) {
+        console.log('Dentro de semana');
+      } else {
+        console.log('Fuera de semana');
+      }
       res.status(200).send({
         success: true,
-        lat,
-        lng,
-        placeName,
       });
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log(error);
       res.status(404).send({
         success: false,
         message: 'No destination found',
