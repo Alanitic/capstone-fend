@@ -24,86 +24,144 @@ app.get('/', (req, res) => {
 app.listen(8081, function () {
   console.log('Server running on 8081');
 });
-
+/*
+====================================================================
+Country
+====================================================================
+ */
 app.get('/country', (req, res) => {
   apiRequest.getRequest(COUNTRIES_URL).then((response) => {
     if (response) {
       data = response.data;
-      res.status(200).send({
-        success: true,
-        message: 'All countries',
-        data,
-      });
+      sendResponse(
+        res,
+        200,
+        true,
+        'Retrieving all countries in the world',
+        data
+      );
     } else {
-      res.status(404).send({
-        success: false,
-        message: 'Countries service unavailable',
-      });
+      sendResponse(res, 404, false, 'Countries service unavailable', null);
     }
   });
 });
-
-app.post('/destination', async (req, res) => {
+/*
+====================================================================
+Coordinates
+====================================================================
+ */
+app.post('/coordinates', async (req, res) => {
   const country = req.query.country;
   const ZP = req.query.ZP;
-  const date = req.query.date;
-
   if (!country) {
-    res.status(400).send({
-      success: false,
-      message: 'No destination country provided',
-    });
+    sendResponse(res, 400, false, 'No destination country provided', null);
     return;
   }
 
   if (!ZP) {
-    res.status(400).send({
-      success: false,
-      message: 'No zip code provided',
-    });
+    sendResponse(res, 400, false, 'No zip code provided', null);
+    return;
+  }
+
+  // Retrieving the coordinates of the given place
+  try {
+    const { lat, lng, placeName } = await apiDestination.getLatLon(ZP, country);
+    const data = {
+      lat,
+      lng,
+      placeName,
+    };
+    sendResponse(res, 200, true, 'Retrieving coordinates and placename', data);
+  } catch (error) {
+    sendResponse(res, 404, false, 'No data found with given criteria', null);
+  }
+});
+
+/*
+====================================================================
+Forecast
+====================================================================
+ */
+
+app.post('/forecast', async (req, res) => {
+  const lat = req.query.lat;
+  const lng = req.query.lng;
+  const date = req.query.date;
+
+  if (!lat) {
+    sendResponse(res, 400, false, 'No latitud provided', null);
+    return;
+  }
+
+  if (!lng) {
+    sendResponse(res, 400, false, 'No longitud provided', null);
     return;
   }
 
   if (!date) {
-    res.status(400).send({
-      success: false,
-      message: 'No travel date provided',
-    });
+    sendResponse(res, 400, false, 'No date provided', null);
     return;
   }
-  // Retrieving the coordinates of the given place
-  const { lat, lng, placeName } = await apiDestination.getLatLon(ZP, country);
-  // Fetching data weather of the given coordinates
+
   const { data: forecast } = await apiDestination.getWeatherForecast(lat, lng);
+
+  if (!forecast) {
+    sendResponse(res, 404, 'No destination found with given criteria', null);
+    return;
+  }
+
   if (apiDestination.isWithinWeek(date)) {
     const destination = forecast.find((item) => item.valid_date === date);
-    // If the given date is in the past destination will be null
     if (!destination) {
-      res.status(404).send({
-        success: false,
-        nessage: 'No destination found with given criteria',
-      });
+      sendResponse(
+        res,
+        404,
+        false,
+        'No destination found with given criteria',
+        null
+      );
       return;
     }
-    const results = await apiDestination.getDestinationImg(placeName, 3);
-    const { webformatURL: img } = results[0];
     const {
       low_temp,
       max_temp,
       temp,
       weather: { description },
     } = destination;
-    res.status(200).send({
-      success: true,
-      data: {
-        low_temp,
-        max_temp,
-        temp,
-        placeName,
-        description,
-        img,
-      },
-    });
+    const data = { low_temp, max_temp, temp, description };
+    sendResponse(res, 200, true, 'Forecast of the given date(s)', data);
   } else {
   }
 });
+
+/*
+====================================================================
+Destination Image
+====================================================================
+ */
+
+app.post('/destinationImg', async (req, res) => {
+  const placeName = req.query.placeName;
+  const nImages = req.query.nImages || 3;
+  if (!placeName) {
+    sendResponse(res, 400, false, 'No place name provided', null);
+    return;
+  }
+  const results = await apiDestination.getDestinationImg(placeName, nImages);
+  const data = results.map(({ webformatURL }) => webformatURL);
+  sendResponse(res, 200, true, 'Images of the provided place', data);
+});
+
+/*
+====================================================================
+General functions
+====================================================================
+ */
+
+const sendResponse = (res, status, success, message, data) => {
+  res.status(status).send({
+    success,
+    message,
+    data,
+  });
+};
