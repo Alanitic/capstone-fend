@@ -4,9 +4,10 @@ const getRequest = async (url = '') => {
 };
 
 const postRequest = async (url) => {
-  const respomse = await fetch(url, {
+  const res = await fetch(url, {
     method: 'POST',
   });
+  return await res.json();
 };
 
 export { getRequest, postRequest };

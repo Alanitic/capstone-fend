@@ -1,3 +1,5 @@
+import { postRequest } from './serverRequest';
+
 const handleSubmit = (e) => {
   e.preventDefault();
   if (validateZP() && validateDate()) {
@@ -6,7 +8,16 @@ const handleSubmit = (e) => {
 };
 
 const fetchWeather = async () => {
-  const { data } = await getRequest('http://localhost:8081/destination');
+  const country = document.querySelector('#country').value;
+  const zp = document.querySelector('#zp').value;
+  const date = document.querySelector('#date').value;
+  const { success, data, message } = await postRequest(
+    `http://localhost:8081/destination/?country=${country}&ZP=${zp}&date=${date}`
+  );
+  if (success) {
+  } else {
+    toggleErrorMsg(true, message);
+  }
 };
 
 const createSingleCard = (data, place) => {

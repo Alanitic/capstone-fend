@@ -43,7 +43,7 @@ app.get('/country', (req, res) => {
   });
 });
 
-app.post('/destination', (req, res) => {
+app.post('/destination', async (req, res) => {
   const country = req.query.country;
   const ZP = req.query.ZP;
   const date = req.query.date;
@@ -71,25 +71,39 @@ app.post('/destination', (req, res) => {
     });
     return;
   }
-
-  apiDestination
-    .getLatLon(ZP, country)
-    .then((data) => {
-      const { lat, lng, placeName } = data;
-      if (apiDestination.isWithinWeek(date)) {
-        console.log('Dentro de semana');
-      } else {
-        console.log('Fuera de semana');
-      }
-      res.status(200).send({
-        success: true,
-      });
-    })
-    .catch((error) => {
-      console.log(error);
+  // Retrieving the coordinates of the given place
+  const { lat, lng, placeName } = await apiDestination.getLatLon(ZP, country);
+  // Fetching data weather of the given coordinates
+  const { data: forecast } = await apiDestination.getWeatherForecast(lat, lng);
+  if (apiDestination.isWithinWeek(date)) {
+    const destination = forecast.find((item) => item.valid_date === date);
+    // If the given date is in the past destination will be null
+    if (!destination) {
       res.status(404).send({
         success: false,
-        message: 'No destination found',
+        nessage: 'No destination found with given criteria',
       });
+      return;
+    }
+    const results = await apiDestination.getDestinationImg(placeName, 3);
+    const { webformatURL: img } = results[0];
+    const {
+      low_temp,
+      max_temp,
+      temp,
+      weather: { description },
+    } = destination;
+    res.status(200).send({
+      success: true,
+      data: {
+        low_temp,
+        max_temp,
+        temp,
+        placeName,
+        description,
+        img,
+      },
     });
+  } else {
+  }
 });
