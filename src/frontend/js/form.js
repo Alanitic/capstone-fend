@@ -2,22 +2,53 @@ import { postRequest } from './serverRequest';
 
 const handleSubmit = (e) => {
   e.preventDefault();
-  if (validateZP() && validateDate()) {
-    fetchWeather();
+  // Reset error message
+  toggleErrorMsg(false);
+  // Retrieving UI data
+  const { country, zp, dateStr } = getUIData();
+  // Validating zip code
+  if (!validateZP(zp)) {
+    toggleErrorMsg(true, 'Please provide a Zip Code');
+    return;
   }
+  // Validating date
+  if (!validateDate(dateStr)) {
+    toggleErrorMsg(true, 'Please provide a valid date');
+  }
+  // Making requests
+  makePostRequests(country, zp, dateStr)
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((error) => {
+      toggleErrorMsg(true, error);
+    });
 };
 
-const fetchWeather = async () => {
+const getUIData = () => {
   const country = document.querySelector('#country').value;
   const zp = document.querySelector('#zp').value;
-  const date = document.querySelector('#date').value;
-  const { success, data, message } = await postRequest(
-    `http://localhost:8081/destination/?country=${country}&ZP=${zp}&date=${date}`
+  const dateStr = document.querySelector('#date').value;
+  return { country, zp, dateStr };
+};
+
+const makePostRequests = async (country, zp, dateStr) => {
+  const { lat, lng, placeName } = await postRequest(
+    `http://localhost:8081/coordinates?country=${country}&ZP=${zp}`
   );
-  if (success) {
-  } else {
-    toggleErrorMsg(true, message);
-  }
+  const forecast = await postRequest(
+    `http://localhost:8081/forecast?lat=${lat}&lng=${lng}&date=${dateStr}`
+  );
+  const images = await postRequest(
+    `http://localhost:8081/destination-img?placeName=${placeName}&n_img=&${3}`
+  );
+  return {
+    placeName,
+    lat,
+    lng,
+    forecast,
+    images,
+  };
 };
 
 const createSingleCard = (data, place) => {
@@ -26,30 +57,23 @@ const createSingleCard = (data, place) => {
   card.classList.add('card');
 };
 
-const validateZP = () => {
-  const ZP = document.querySelector('#zp');
-  if (ZP.value === null || ZP.value.length === 0) {
-    toggleErrorMsg(true, 'Please provide a Zip Code');
+const validateZP = (zp) => {
+  if (zp === null || zp.length === 0) {
     return false;
   } else {
-    toggleErrorMsg(false);
     return true;
   }
 };
 
-const validateDate = () => {
-  const calendar = document.querySelector('#date');
-  if (calendar.value === '') {
-    toggleErrorMsg(true, 'Please provide a date');
+const validateDate = (dateStr) => {
+  if (dateStr === '') {
     return false;
   }
-  const date = toDate(calendar.value);
+  const date = toDate(dateStr);
   const today = new Date();
   if (date.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0)) {
-    toggleErrorMsg(true, 'Invalid date');
     return false;
   } else {
-    toggleErrorMsg(false);
     return true;
   }
 };

@@ -4,10 +4,16 @@ const getRequest = async (url = '') => {
 };
 
 const postRequest = async (url) => {
-  const res = await fetch(url, {
+  const response = await fetch(url, {
     method: 'POST',
   });
-  return await res.json();
+  const jsonRes = await response.json();
+  if (jsonRes.success) {
+    const { data } = jsonRes;
+    return data;
+  } else {
+    throw new Error(jsonRes.message);
+  }
 };
 
 export { getRequest, postRequest };

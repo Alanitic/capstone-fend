@@ -126,11 +126,24 @@ app.post('/forecast', async (req, res) => {
       low_temp,
       max_temp,
       temp,
+      valid_date,
       weather: { description },
     } = destination;
-    const data = { low_temp, max_temp, temp, description };
-    sendResponse(res, 200, true, 'Forecast of the given date(s)', data);
+    const data = { low_temp, max_temp, temp, description, valid_date };
+    const result = [];
+    result.push(data);
+    sendResponse(res, 200, true, 'Forecast of the given date', result);
   } else {
+    const result = forecast.map(
+      ({ low_temp, max_temp, temp, weather: { description }, valid_date }) => ({
+        low_temp,
+        max_temp,
+        temp,
+        description,
+        valid_date,
+      })
+    );
+    sendResponse(res, 200, true, 'Forecast of the given date(s)', result);
   }
 });
 
@@ -140,14 +153,14 @@ Destination Image
 ====================================================================
  */
 
-app.post('/destinationImg', async (req, res) => {
+app.post('/destination-img', async (req, res) => {
   const placeName = req.query.placeName;
-  const nImages = req.query.nImages || 3;
+  const n_img = req.query.n_img || 3;
   if (!placeName) {
     sendResponse(res, 400, false, 'No place name provided', null);
     return;
   }
-  const results = await apiDestination.getDestinationImg(placeName, nImages);
+  const results = await apiDestination.getDestinationImg(placeName, n_img);
   const data = results.map(({ webformatURL }) => webformatURL);
   sendResponse(res, 200, true, 'Images of the provided place', data);
 });
