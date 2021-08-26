@@ -1,2 +1,15 @@
-@media screen and (max-width: 900px) {
+@media (min-width: 600px) and (max-width: 900px) {
+  .bg-color {
+    height: 60%;
+  }
+  .wave {
+    top: 50vh;
+  }
+
+  .card {
+    height: 60vh;
+    img {
+      height: 40vh;
+    }
+  }
 }
