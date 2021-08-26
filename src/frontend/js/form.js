@@ -1,9 +1,12 @@
 import { postRequest } from './serverRequest';
+import { clearUI, getUIData, toggleErrorMsg, createCardSection } from './ui';
 
 const handleSubmit = (e) => {
   e.preventDefault();
   // Reset error message
   toggleErrorMsg(false);
+  // Reset content
+  clearUI();
   // Retrieving UI data
   const { country, zp, dateStr } = getUIData();
   // Validating zip code
@@ -18,18 +21,11 @@ const handleSubmit = (e) => {
   // Making requests
   makePostRequests(country, zp, dateStr)
     .then((result) => {
-      console.log(result);
+      createCardSection(result);
     })
     .catch((error) => {
       toggleErrorMsg(true, error);
     });
-};
-
-const getUIData = () => {
-  const country = document.querySelector('#country').value;
-  const zp = document.querySelector('#zp').value;
-  const dateStr = document.querySelector('#date').value;
-  return { country, zp, dateStr };
 };
 
 const makePostRequests = async (country, zp, dateStr) => {
@@ -39,8 +35,14 @@ const makePostRequests = async (country, zp, dateStr) => {
   const forecast = await postRequest(
     `http://localhost:8081/forecast?lat=${lat}&lng=${lng}&date=${dateStr}`
   );
+  let nImages = 0;
+  if (forecast.length === 1) {
+    nImages = 3;
+  } else {
+    nImages = 16;
+  }
   const images = await postRequest(
-    `http://localhost:8081/destination-img?placeName=${placeName}&n_img=&${3}`
+    `http://localhost:8081/destination-img?placeName=${placeName}&n_img=${nImages}`
   );
   return {
     placeName,
@@ -51,12 +53,11 @@ const makePostRequests = async (country, zp, dateStr) => {
   };
 };
 
-const createSingleCard = (data, place) => {
-  const container = document.querySelector('#weather-results');
-  const card = document.createElement('div');
-  card.classList.add('card');
-};
-
+/**
+ * Validates if there is an existing zip code
+ * @param {string} zp
+ * @returns {boolean} zip code valid
+ */
 const validateZP = (zp) => {
   if (zp === null || zp.length === 0) {
     return false;
@@ -65,6 +66,11 @@ const validateZP = (zp) => {
   }
 };
 
+/**
+ * Determines if there is an input date and is greater than today
+ * @param {string} dateStr
+ * @returns {boolean} whether the provided date is valid or not
+ */
 const validateDate = (dateStr) => {
   if (dateStr === '') {
     return false;
@@ -78,20 +84,14 @@ const validateDate = (dateStr) => {
   }
 };
 
+/**
+ * Parses given date in string format to Date
+ * @param {string} dateStr
+ * @returns {Date} Date parsed
+ */
 const toDate = (dateStr) => {
   const [year, month, day] = dateStr.split('-');
   return new Date(year, month - 1, day);
-};
-
-const toggleErrorMsg = (isVisible, msg = '') => {
-  const section = document.querySelector('.error-form');
-  const error = document.querySelector('#error-msg');
-  if (isVisible) {
-    section.classList.remove('hidden');
-    error.innerHTML = msg;
-  } else {
-    section.classList.add('hidden');
-  }
 };
 
 export { handleSubmit };
