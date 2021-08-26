@@ -1,10 +1,9 @@
-@media (min-width: 901px) and (max-width: 1439px) {
+@media (min-width: 1440px) {
   .bg-color {
     height: 70%;
   }
-
   .wave {
-    top: 50vh;
+    top: 45vh;
   }
 
   .search-bar {
@@ -25,14 +24,14 @@
 
   .card {
     width: 30vw;
-    height: 40vh;
+    height: 50vh;
     img {
       width: 30vw;
-      height: 20vh;
+      height: 30vh;
     }
     h3,
     p {
-      margin: 1vh 1vw;
+      margin: 2vh 2vw;
     }
   }
 }
