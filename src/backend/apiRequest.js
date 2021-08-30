@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime';
 const axios = require('axios');
 
 const getRequest = async (url = '') => {
