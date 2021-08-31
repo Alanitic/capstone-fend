@@ -1,3 +1,5 @@
+import img from '../assets/not-found.png';
+
 const getUIData = () => {
   const country = document.querySelector('#country').value;
   const zp = document.querySelector('#zp').value;
@@ -20,8 +22,12 @@ const createCards = (content) => {
     const card = document.createElement('div');
     card.classList.add('card');
     // Creating the image
-    const img = document.createElement('img');
-    img.src = content.images[i];
+    const currentImg = document.createElement('img');
+    if (content.images.length > 0) {
+      currentImg.src = content.images[i];
+    } else {
+      currentImg.src = img;
+    }
     // Creating the title
     const title = document.createElement('h3');
     title.innerText = content.forecast[i].valid_date;
@@ -33,7 +39,7 @@ const createCards = (content) => {
       Wheather: ${content.forecast[i].description}`;
     info.innerText = infoStr;
     // Inserting into the fragment
-    card.appendChild(img);
+    card.appendChild(currentImg);
     card.appendChild(title);
     card.appendChild(info);
     fragment.appendChild(card);
